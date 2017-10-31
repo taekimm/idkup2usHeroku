@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Http, Headers, RequestOptions } from '@angular/http';
-import 'rxjs';
+// import 'rxjs/Rx';
+// import { Observable } from 'rxjs/Rx';
+import 'rxjs/add/operator/filter';
 
 @Injectable()
 export class YelpService {
