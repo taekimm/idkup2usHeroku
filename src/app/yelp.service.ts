@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, RequestOptions } from '@angular/http';
-// import 'rxjs/Rx';
+import { Http } from '@angular/http';
+import 'rxjs';
 // import { Observable } from 'rxjs/Rx';
 import 'rxjs/add/operator/filter';
 
