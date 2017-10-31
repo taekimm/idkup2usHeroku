@@ -85,7 +85,6 @@ export class AppComponent {
         var marker = new google.maps.Marker({
           map: map,
           position: positionForMarker,
-          icon: "http://img.gawkerassets.com/img/18kex4zfnw9kmpng/original.png",
           animation: google.maps.Animation.BOUNCE
         });
 
@@ -176,6 +175,7 @@ export class AppComponent {
           // to 
           map: this.googleMap,
           position: LatLng,
+          icon: '../assets/static/images/yelpIcon.png',
           animation: google.maps.Animation.BOUNCE
         });
 
