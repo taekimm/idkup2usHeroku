@@ -43,3 +43,7 @@ app.post('/api/yelpCall', function(req, res) {
 		  return res.json(e);
 		});
 });
+
+app.get('/api/test', function (req, res) {
+	return res.json('Hi')
+})
