@@ -4,11 +4,16 @@ var bodyParser = require("body-parser");
 var app = express();
 app.use(bodyParser.json());
 
+// Create link to Angular build directory
+var distDir = __dirname + "/dist/";
+app.use(express.static(distDir));
+
 // Initialize the app.
 var server = app.listen(process.env.PORT || 8080, function () {
 var port = server.address().port;
 console.log("App now running on port", port);
 });
+
 
 // Yelp fusion stuff below
 const yelp = require('yelp-fusion');
@@ -17,6 +22,13 @@ const token = yelp.accessToken('FXp2QyAtNItDNpVQLFTapQ', 'Fkxzml5t2gGfmeQJDU906n
 	.then(response => {})
 	.catch(e => {});
 
+// Generic error handler used by all endpoints.
+function handleError(res, reason, message, code) {
+  console.log("ERROR: " + reason);
+  res.status(code || 500).json({"error": message});
+}
+
+// Routes
 app.post('/api/yelpCall', function(req, res) {
 	let searchLat = req.body.lat;
 	let searchLong = req.body.long;		
