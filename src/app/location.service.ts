@@ -4,18 +4,16 @@ import 'rxjs';
 
 @Injectable()
 export class LocationService {
-
   constructor(private _http: Http) { }
-  
-  getCoordinates(){
+
+  getCoordinates() {
     return new Promise( (resolve, reject) => {
       navigator.geolocation.getCurrentPosition( function (position) {
-        resolve(position)
-        reject()
+        resolve(position);
+        reject();
       }, () => {
-        //show popup
-      }, {enableHighAccuracy: true} )
-        
-    })
+      // show popup
+      }, {enableHighAccuracy: true});
+    });
   }
 }

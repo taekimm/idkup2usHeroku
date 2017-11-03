@@ -19,15 +19,14 @@ export class AppComponent {
     categories: '',
     limit: 20,
     price: '',
-  }
+  };
 
   // variable for radius to search in MILES
   // yelp && google maps takes it in meters only
-  searchRadiusInMiles = 1
+  searchRadiusInMiles = 1;
 
-  searched=false;
-
-  myVar=true;
+  // used for switch case for swapping MatCards
+  searched = false;
 
   // booleans to hold price inputs
   price1 = true;
@@ -35,7 +34,7 @@ export class AppComponent {
   price3 = false;
   price4 = false;
 
-  // Coordinates from location service
+  // Coordinates from location service for use outside of ngOnInit
   coordinates;
 
   // variable to hold marker for person
@@ -51,50 +50,47 @@ export class AppComponent {
   YelpList: Array<any> = [];
   businessList: Array<any> = [];
   pick;
-  
-  
+
   constructor(
     private _yelpService: YelpService,
     private _locationService: LocationService
   ) { }
-  
+
   ngOnInit() {
     this._locationService.getCoordinates()
       .then( position => {
-        
         // setting coordinates objects above to results from geolocation
         this.coordinates = position;
         // setting newSearch variable's lat & long values to co
         this.newSearch.lat = this.coordinates.coords.latitude;
         this.newSearch.long = this.coordinates.coords.longitude;
 
-        //map options
-        var mapOptions = {
+        // map options
+        const mapOptions = {
           zoom: 15,
           mapTypeId: google.maps.MapTypeId.ROADMAP
         };
 
-        //generating map
-        var map = new google.maps.Map(document.getElementById('googleMap'), mapOptions);
+        // generating map
+        const map = new google.maps.Map(document.getElementById('googleMap'), mapOptions);
         this.googleMap = map;
         
         // geolocate position
-        var positionForMarker = new google.maps.LatLng(this.coordinates.coords.latitude, this.coordinates.coords.longitude)
+        const positionForMarker = new google.maps.LatLng(this.coordinates.coords.latitude, this.coordinates.coords.longitude);
 
         // marker based off geolocate position
-        var marker = new google.maps.Marker({
+        const marker = new google.maps.Marker({
           map: map,
-          position: positionForMarker,
-          animation: google.maps.Animation.BOUNCE
+          position: positionForMarker
         });
 
         // setting personMarker to google maps marker for current location
         this.personMarker = marker;
 
-        map.setCenter(positionForMarker)
+        map.setCenter(positionForMarker);
 
         // create radius around person
-        var circle = new google.maps.Circle({
+        const circle = new google.maps.Circle({
           map: map,
           radius: this.searchRadiusInMiles * 1609.34,
           fillColor: '#AA0000'
@@ -103,20 +99,22 @@ export class AppComponent {
         this.radiusCircle = circle;
         map.fitBounds(circle.getBounds());
       })
-      .catch()
+      .catch();
   }
 
+  // Event emitted on radius slider binder change
   radiusChange(event) {
     this.radiusCircle.setRadius(this.searchRadiusInMiles * 1609.34);
     this.googleMap.fitBounds(this.radiusCircle.getBounds());
   }
 
   search(){
-    this.searched=true;
+    // resetting switch case variable to display search MatCard
+    this.searched = true;
 
     // resetting below variables
     if (this.pick){
-      this.pick.setMap(null)
+      this.pick.setMap(null);
     }
     if (this.YelpList) {
       this.YelpList = [];
@@ -126,91 +124,92 @@ export class AppComponent {
     }
 
     // to convert to meters
-    this.newSearch.radius = Math.floor(this.searchRadiusInMiles * 1609.34)
+    this.newSearch.radius = Math.floor(this.searchRadiusInMiles * 1609.34);
     
     // set max meters radius to 40,000
-    if(this.newSearch.radius > 40000 ){
-      this.newSearch.radius = 40000
-    }
+    if(this.newSearch.radius > 40000) {
+      this.newSearch.radius = 40000;
+    };
 
     // adding price search options to newSearch.price string
-    if (this.price1 == true) {
-      this.newSearch.price += "1";
-    }
-    if (this.price2 == true && this.newSearch.price == '') {
-      this.newSearch.price += "2";
-    } else if (this.price2 == true) {
-      this.newSearch.price += ",2"
-    }
-    if (this.price3 == true && this.newSearch.price == '') {
-      this.newSearch.price += "3";
-    } else if (this.price3 == true) {
-      this.newSearch.price += ",3"
-    }
-    if (this.price4 == true && this.newSearch.price == '') {
-      this.newSearch.price += "4";
-    } else if (this.price4 == true) {
-      this.newSearch.price += ",4"
-    }
+    if (this.price1 === true) {
+      this.newSearch.price += '1';
+    };
+    if (this.price2 === true && this.newSearch.price == '') {
+      this.newSearch.price += '2';
+    } else if (this.price2 === true) {
+      this.newSearch.price += ',2';
+    };
+    if (this.price3 === true && this.newSearch.price == '') {
+      this.newSearch.price += '3';
+    } else if (this.price3 === true) {
+      this.newSearch.price += ',3';
+    };
+    if (this.price4 === true && this.newSearch.price == '') {
+      this.newSearch.price += '4';
+    } else if (this.price4 === true) {
+      this.newSearch.price += ',4';
+    };
 
     // calls Yelp API with newSearch object
     this._yelpService.getRestaurants(this.newSearch)  
     .then( response => {
       // push each rest. from response into YelpList array
-      for (let i = 0; i < response.jsonBody.businesses.length; i++){
-        this.YelpList.push(response.jsonBody.businesses[i])
+      for (let i = 0; i < response.jsonBody.businesses.length; i++) {
+        this.YelpList.push(response.jsonBody.businesses[i]);
       }
 
       // shuffle list of rests.
-      this.YelpList = shuffle(this.YelpList)
+      this.YelpList = shuffle(this.YelpList);
 
       // array to hold all markers for yelp listings
       let businessMarkers = [];
-          
-      for (let i = 0; i < this.YelpList.length; i++){
-            
-        var LatLng = {lat: this.YelpList[i].coordinates.latitude, lng: this.YelpList[i].coordinates.longitude}
-      
-        var testmarker = new google.maps.Marker({
-          // to 
+
+      // for loop to loop through rests from API call, create a google maps marker, then push into businessMarkers array          
+      for (let i = 0; i < this.YelpList.length; i++) {
+        const LatLng = {lat: this.YelpList[i].coordinates.latitude, lng: this.YelpList[i].coordinates.longitude};
+
+        const restMarker = new google.maps.Marker({
           map: this.googleMap,
           position: LatLng,
           icon: '../assets/static/images/yelpIcon.png',
           animation: google.maps.Animation.BOUNCE
         });
 
-        businessMarkers.push(testmarker)
+        businessMarkers.push(restMarker);
       }
-        
-        // setting selected rest. (always last in the array)
-        // b/c array is shuffled prior to pick, this pick will always be randomized
-        this.pick = businessMarkers[businessMarkers.length-1]
+      
+      // setting selected rest. (always last in the array)
+      // b/c array is shuffled prior to pick, this pick will always be randomized
+      this.pick = businessMarkers[businessMarkers.length-1];
 
+      // looping through businessMarkers, removing each one every .5 seconds after 3 second delay
       for (let j = 0; j < businessMarkers.length; j++) {
-        if( j < businessMarkers.length-1){
-            setTimeout( () => {
-              businessMarkers[j].setMap(null)
-              this.YelpList.splice(this.YelpList[j], 1)
-            }, 3000 + (j * 500));
-          }
-          else {
-            setTimeout( () => {
-              this.pick.setAnimation(null)
-            }, 3000 + ((j-1) * 500));
-          }
+        // removes marker for everything before last business marker
+       if( j < businessMarkers.length-1) {
+          setTimeout( () => {
+            businessMarkers[j].setMap(null);
+            this.YelpList.splice(this.YelpList[j], 1);
+          }, 3000 + (j * 500));
+       } else {
+         // sets animation to null for last rest.
+          setTimeout( () => {
+          this.pick.setAnimation(null)
+        }, 3000 + ((j-1) * 500));
+       }
       }
         
-        // shuffle function
-        // function scoped to getRestaurants method
+      // shuffle function
+      // function scoped to getRestaurants method
       function shuffle(arr) {
-          var m = arr.length, t, i;
+          let m = arr.length, t, i;
           while (m) {
             i = Math.floor(Math.random() * m--);
             t = arr[m];
             arr[m] = arr[i];
-            arr[i] = t
+            arr[i] = t;
           }
-          return arr
+          return arr;
       }
     })
 
@@ -218,9 +217,9 @@ export class AppComponent {
     .catch( err => {
         console.log(err);
     })
-  }
+  };
 
-  pick_again(){
+  pick_again() {
     // resetting variables
     this.searched=false;
     this.newSearch.radius = 0;

@@ -9,8 +9,8 @@ import 'rxjs/add/operator/filter';
 export class YelpService {
 
   constructor(private _http: Http) { }
-  
-  getRestaurants(search){
+
+  getRestaurants(search) {
     return this._http.post('/api/yelpCall', search)
       .map( data => data.json())
       .toPromise();
